@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="taskjs1.js"></script>
+</head>
+<title>Registration Form</title>
+<style>
+	:root {
+		--bg: #f6f8fc;
+		--card: #ffffff;
+		--text: #1f2937;
+		--muted: #6b7280;
+		--border: #d1d5db;
+		--primary: #0f766e;
+		--primary-hover: #115e59;
+	}
+
+	* {
+		box-sizing: border-box;
+	}
+
+	body {
+		margin: 0;
+		font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+		background: linear-gradient(160deg, #eef6ff, #f6f8fc 45%, #ecfeff);
+		color: var(--text);
+		padding: 24px;
+	}
+
+	.wrapper {
+		max-width: 900px;
+		margin: 0 auto;
+		background: var(--card);
+		border: 1px solid #e5e7eb;
+		border-radius: 14px;
+		box-shadow: 0 10px 25px rgba(15, 118, 110, 0.1);
+		padding: 24px;
+	}
+
+	h1,
+	h2 {
+		margin: 0 0 14px;
+		color: #0f172a;
+	}
+
+	form {
+		display: grid;
+		gap: 14px;
+		margin-bottom: 24px;
+	}
+
+	.field {
+		display: grid;
+		gap: 6px;
+	}
+
+	label {
+		font-weight: 600;
+		font-size: 14px;
+	}
+
+	input[type="text"],
+	input[type="email"],
+	input[type="tel"],
+	textarea,
+	select {
+		width: 100%;
+		padding: 10px 12px;
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		font-size: 14px;
+		outline: none;
+		transition: border-color 0.2s ease;
+	}
+
+	input:focus,
+	textarea:focus,
+	select:focus {
+		border-color: var(--primary);
+	}
+
+	textarea {
+		min-height: 90px;
+		resize: vertical;
+	}
+
+	.inline-options {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 14px;
+	}
+
+	.inline-options label {
+		font-weight: 500;
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+
+	.terms {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 14px;
+		color: var(--muted);
+	}
+
+	button {
+		width: fit-content;
+		padding: 10px 18px;
+		border: none;
+		border-radius: 8px;
+		background: var(--primary);
+		color: #fff;
+		font-weight: 600;
+		cursor: pointer;
+		transition: background 0.2s ease;
+	}
+
+	button:hover {
+		background: var(--primary-hover);
+	}
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		overflow: hidden;
+		border-radius: 10px;
+		border: 1px solid #dbe2ea;
+		font-size: 14px;
+	}
+
+	th,
+	td {
+		border: 1px solid #dbe2ea;
+		padding: 10px;
+		text-align: left;
+		vertical-align: top;
+	}
+
+	th {
+		background: #f0fdfa;
+		color: #134e4a;
+	}
+
+	@media (max-width: 640px) {
+		.wrapper {
+			padding: 16px;
+		}
+
+		table {
+			display: block;
+			overflow-x: auto;
+		}
+	}
+</style>
+</head>
+
+<body>
+	<div class="wrapper">
+		<h1>User Registration Form</h1>
+
+		<form id="from">
+			<div class="field">
+				<label for="name">Name</label>
+				<input type="text" id="name" name="name" placeholder="Enter your name" required>
+			</div>
+
+			<div class="field">
+				<label for="email">Email</label>
+				<input type="email" id="email" name="email" placeholder="Enter your email" required>
+			</div>
+
+			<div class="field">
+				<label for="mobile">Mobile Number</label>
+				<input type="tel" id="mobile" name="mobile" placeholder="Enter your mobile number" required>
+			</div>
+
+			<div class="field">
+				<label for="address">Address</label>
+				<textarea id="address" name="address" placeholder="Enter your address" required></textarea>
+			</div>
+
+			<div class="field">
+				<label>Gender</label>
+				<div class="inline-options">
+					<label><input type="radio" name="gender" value="Male" id="gen" required> Male</label>
+					<label><input type="radio" name="gender" id="gen" value="Female"> Female</label>
+					<label><input type="radio" name="gender" id="gen" value="Other"> Other</label>
+				</div>
+			</div>
+
+			<div class="field">
+				<label for="county">County</label>
+				<select id="county" name="county" required>
+					<option value="" selected disabled >Select county</option>
+					<option value="Nairobi" >Nairobi</option>
+					<option value="Mombasa" >Mombasa</option>
+					<option value="Kisumu" >Kisumu</option>
+					<option value="Nakuru" >Nakuru</option>
+					<option value="Eldoret">Eldoret</option>
+				</select>
+			</div>
+
+			<label class="terms">
+				<input type="checkbox" name="terms" id="term" required>
+				I agree to the terms and conditions
+			</label>
+
+			<button type="submit" id="sub" onclick="handleSubmit(event)" style="visibility: visible;">
+				Submit
+			</button>
+			<button type="button" id="upt" onclick="update(event)" style="visibility: hidden;">
+				Update
+			</button>
+		</form>
+
+		<h2>Submitted Data Table</h2>
+		<table>
+			<thead>
+				<tr>
+					<th>Index</th>
+					<th>Name</th>
+					<th>Email</th>
+					<th>Mobile Number</th>
+					<th>Address</th>
+					<th>Gender</th>
+					<th>County</th>
+					<th>Accepted</th>
+					<th>action</th>
+				</tr>
+			</thead>
+			<tbody id="tbody">
+				
+			</tbody>
+		</table>
+	</div>
+</body>
+
+</html>

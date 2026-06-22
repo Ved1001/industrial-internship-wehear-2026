@@ -1,0 +1,342 @@
+// ====================================================
+// 1. DATABASE COMMANDS
+// ====================================================
+
+show dbs;                         // List all databases
+use ecommerce;                    // Create or switch to ecommerce DB
+show collections;                 // List all collections
+db.dropDatabase();                // Delete current database
+
+
+// ====================================================
+// 2. INSERT DOCUMENTS
+// ====================================================
+
+// Insert Products
+db.products.insertMany([
+{
+  name: "Wireless Mouse",
+  price: 799,
+  category: "Electronics",
+  stock: 120,
+  ratings: 4.5,
+  tags: ["computer", "accessory", "wireless"],
+  createdAt: new Date()
+},
+{
+  name: "Mechanical Keyboard",
+  price: 2499,
+  category: "Electronics",
+  stock: 80,
+  ratings: 4.8,
+  tags: ["keyboard", "mechanical"],
+  createdAt: new Date()
+},
+{
+  name: "Gaming Laptop",
+  price: 85999,
+  category: "Computers",
+  stock: 30,
+  ratings: 4.6,
+  tags: ["gaming", "laptop"],
+  createdAt: new Date()
+}
+]);
+
+
+// Insert Orders
+db.orders.insertMany([
+{
+  orderId: "ORD001",
+  user: "John Doe",
+  products: [
+    { name: "Wireless Mouse", quantity: 1, price: 799 },
+    { name: "Mechanical Keyboard", quantity: 1, price: 2499 }
+  ],
+  total: 3298,
+  status: "Delivered",
+  createdAt: new Date()
+},
+{
+  orderId: "ORD002",
+  user: "Jane Smith",
+  products: [
+    { name: "Gaming Laptop", quantity: 1, price: 85999 }
+  ],
+  total: 85999,
+  status: "Pending",
+  createdAt: new Date()
+}
+]);
+
+
+// Insert Contacts
+db.contacts.insertMany([
+{
+  name: "Alice",
+  message: "Loved your website!",
+  phone: "9876543210",
+  createdAt: new Date()
+},
+{
+  name: "Bob",
+  message: "Do you have discounts on laptops?",
+  phone: "9123456789",
+  createdAt: new Date()
+},
+{
+  name: "Carol",
+  message: "I want to cancel my order.",
+  phone: "9988776655",
+  createdAt: new Date()
+}
+]);
+
+
+// ====================================================
+// 3. READ QUERIES (FIND)
+// ====================================================
+
+db.products.find();                              // Find all documents
+
+db.products.find().pretty();                     // Pretty print
+
+db.products.find({
+  category: "Electronics"
+});                                              // Filter by category
+
+db.products.find({
+  price: { $gt: 1000 }
+});                                              // Price > 1000
+
+db.products.find({
+  price: { $gte: 1000, $lte: 50000 }
+});                                              // Price between 1000 and 50000
+
+db.products.find({
+  $or: [
+    { category: "Electronics" },
+    { stock: { $lt: 50 } }
+  ]
+});                                              // OR condition
+
+db.products.find(
+  {},
+  { name: 1, price: 1, _id: 0 }
+);                                               // Projection
+
+db.products.find()
+           .sort({ price: -1 })
+           .limit(2);                            // Top 2 expensive products
+
+
+// ====================================================
+// 4. UPDATE QUERIES
+// ====================================================
+
+db.products.updateOne(
+{
+  name: "Wireless Mouse"
+},
+{
+  $set: {
+    price: 899
+  }
+}
+);                                               // Update one document
+
+db.products.updateMany(
+{
+  category: "Electronics"
+},
+{
+  $inc: {
+    stock: 10
+  }
+}
+);                                               // Increment stock by 10
+
+db.products.updateOne(
+{
+  name: "Wireless Mouse"
+},
+{
+  $push: {
+    tags: "new"
+  }
+}
+);                                               // Add item to array
+
+
+// ====================================================
+// 5. DELETE QUERIES
+// ====================================================
+
+db.contacts.deleteOne({
+  name: "Alice"
+});                                              // Delete one document
+
+db.orders.deleteMany({
+  status: "Delivered"
+});                                              // Delete many documents
+
+
+// ====================================================
+// 6. INDEXING
+// ====================================================
+
+db.products.createIndex({
+  name: 1
+});                                              // Create ascending index
+
+db.products.getIndexes();                        // View all indexes
+
+db.products.find({
+  price: { $gt: 5000 }
+}).explain("executionStats");                    // Query performance
+
+
+// ====================================================
+// 7. AGGREGATION FRAMEWORK
+// ====================================================
+
+db.orders.aggregate([
+{
+  $group: {
+    _id: null,
+    totalRevenue: {
+      $sum: "$total"
+    }
+  }
+}
+]);                                              // Total revenue
+
+
+db.orders.aggregate([
+{
+  $group: {
+    _id: "$status",
+    totalOrders: {
+      $sum: 1
+    }
+  }
+}
+]);                                              // Group by status
+
+
+db.orders.aggregate([
+{
+  $lookup: {
+    from: "products",
+    localField: "products.name",
+    foreignField: "name",
+    as: "productDetails"
+  }
+}
+]);                                              // Join orders with products
+
+
+// ====================================================
+// 8. CREATE SALES COLLECTION
+// ====================================================
+
+use ecommerce;
+
+db.sales.insertMany([
+{ _id: 1, item: "Apple", price: 10, quantity: 5, category: "Fruit" },
+{ _id: 2, item: "Banana", price: 5, quantity: 10, category: "Fruit" },
+{ _id: 3, item: "Carrot", price: 8, quantity: 6, category: "Vegetable" },
+{ _id: 4, item: "Tomato", price: 6, quantity: 8, category: "Vegetable" },
+{ _id: 5, item: "Mango", price: 15, quantity: 3, category: "Fruit" }
+]);
+
+
+// ====================================================
+// 9. AGGREGATION PIPELINE EXAMPLES
+// ====================================================
+
+db.sales.aggregate([
+{
+  $match: {
+    category: "Fruit"
+  }
+}
+]);                                              // Filter fruits
+
+
+db.sales.aggregate([
+{
+  $project: {
+    _id: 0,
+    item: 1,
+    price: 1
+  }
+}
+]);                                              // Show only item and price
+
+
+db.sales.aggregate([
+{
+  $group: {
+    _id: "$category",
+    totalSales: {
+      $sum: {
+        $multiply: ["$price", "$quantity"]
+      }
+    }
+  }
+}
+]);                                              // Total sales by category
+
+
+db.sales.aggregate([
+{
+  $group: {
+    _id: "$category",
+    totalSales: {
+      $sum: {
+        $multiply: ["$price", "$quantity"]
+      }
+    }
+  }
+},
+{
+  $sort: {
+    totalSales: -1
+  }
+}
+]);                                              // Sort by total sales
+
+
+db.sales.aggregate([
+{
+  $match: {
+    category: "Fruit"
+  }
+},
+{
+  $group: {
+    _id: null,
+    totalFruitSales: {
+      $sum: {
+        $multiply: ["$price", "$quantity"]
+      }
+    }
+  }
+}
+]);                                              // Total fruit sales
+
+
+// ====================================================
+// 10. ADMIN COMMANDS
+// ====================================================
+
+db.stats();                                      // Database statistics
+
+db.serverStatus();                               // Server information
+
+db.products.countDocuments();                    // Count documents
+
+db.products.renameCollection("items");           // Rename collection
+
+db.products.drop();                              // Drop collection
